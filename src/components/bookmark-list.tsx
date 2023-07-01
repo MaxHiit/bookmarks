@@ -1,13 +1,11 @@
 import '../styles/bookmark.css';
-import { useMemo } from 'react';
-import { BookmarkType } from '../types';
+import { useContext, useMemo } from 'react';
 import Bookmark from './bookmark';
+import { BookmarkContext } from '../context/bookmarkContext';
 
-interface BookmarkListProps {
-	bookmarks: BookmarkType[];
-}
+export const BookmarkList = () => {
+	const { bookmarks } = useContext(BookmarkContext);
 
-export const BookmarkList = ({ bookmarks }: BookmarkListProps) => {
 	const memoizedBookmarks = useMemo(
 		() => bookmarks.map((bookmark, idx) => <Bookmark key={idx} bookmark={bookmark} />),
 		[bookmarks]

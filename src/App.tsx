@@ -1,14 +1,16 @@
 import './App.css';
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useContext } from 'react';
 import { BookmarkType } from './types';
 import { AddBookmarkForm } from './components/form/add-bookmark-form';
 import { BookmarkList } from './components/bookmark-list';
 import { Loader } from './components/loader';
 import { validProviders } from './config';
+import { BookmarkContext } from './context/bookmarkContext';
 
 function App() {
-	const [bookmarks, setBookmarks] = useState<BookmarkType[]>([]);
 	const [errorMessage, setErrorMessage] = useState<string>('');
+
+	const { addBookmark } = useContext(BookmarkContext);
 
 	const handleSubmit = async (urlValue: string) => {
 		try {
@@ -56,7 +58,7 @@ function App() {
 				};
 			}
 
-			setBookmarks((prevBookmarks) => [...prevBookmarks, newBookmark]);
+			addBookmark(newBookmark);
 		} catch (error) {
 			console.error('Error:', error);
 		}
@@ -67,7 +69,7 @@ function App() {
 			<AddBookmarkForm onSubmit={handleSubmit} />
 			{errorMessage && <div className='error-message'>{errorMessage}</div>}
 			<Suspense fallback={<Loader />}>
-				<BookmarkList bookmarks={bookmarks} />
+				<BookmarkList />
 			</Suspense>
 		</>
 	);

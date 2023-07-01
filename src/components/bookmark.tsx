@@ -1,3 +1,5 @@
+import { useContext } from 'react';
+import { BookmarkContext } from '../context/bookmarkContext';
 import type { BookmarkType } from '../types';
 import { formatDuration, formatCreatedAt, formatUploadDate } from '../utils/format';
 
@@ -8,6 +10,12 @@ interface BookmarkProps {
 const Bookmark = ({ bookmark }: BookmarkProps) => {
 	const { title, html, url, author_name, width, height, duration, upload_date, created_at } =
 		bookmark;
+
+	const { deleteBookmark } = useContext(BookmarkContext);
+
+	const handleDeleteClick = () => {
+		deleteBookmark(bookmark);
+	};
 
 	return (
 		<li className='bookmark_item'>
@@ -31,6 +39,7 @@ const Bookmark = ({ bookmark }: BookmarkProps) => {
 				{duration && <p>Duration: {formatDuration(duration)}</p>}
 				<p>Upload Date: {upload_date ? formatUploadDate(upload_date) : 'unknown'}</p>
 				<p>Created At: {formatCreatedAt(created_at)}</p>
+				<button onClick={handleDeleteClick}>Delete</button>
 			</div>
 		</li>
 	);
