@@ -1,35 +1,76 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import './App.css';
+import { useState, Suspense } from 'react';
+import { BookmarkType } from './types';
+import { AddBookmarkForm } from './components/form/add-bookmark-form';
+import { BookmarkList } from './components/bookmark-list';
+import { Loader } from './components/loader';
+import { validProviders } from './config';
 
 function App() {
-  const [count, setCount] = useState(0)
+	const [bookmarks, setBookmarks] = useState<BookmarkType[]>([]);
+	const [errorMessage, setErrorMessage] = useState<string>('');
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+	const handleSubmit = async (urlValue: string) => {
+		try {
+			const response = await fetch(`https://noembed.com/embed?url=${urlValue}`);
+			const data = await response.json();
+
+			if (!response.ok) {
+				setErrorMessage('Failed to fetch embed data');
+				return;
+			}
+
+			const provider = data.provider_name;
+
+			if (!validProviders.includes(provider)) {
+				setErrorMessage('No matching providers found');
+				return;
+			}
+
+			if (errorMessage) {
+				setErrorMessage('');
+			}
+
+			const now = new Date();
+			const createdAt = now.toISOString();
+
+			let newBookmark: BookmarkType = {
+				title: data.title,
+				html: data.html,
+				url: data.url,
+				author_name: data.author_name,
+				upload_date: data.upload_date,
+				created_at: createdAt
+			};
+
+			if (data.type === 'photo') {
+				newBookmark = {
+					...newBookmark,
+					width: data.width,
+					height: data.height
+				};
+			} else if (data.type === 'video') {
+				newBookmark = {
+					...newBookmark,
+					duration: data.duration
+				};
+			}
+
+			setBookmarks((prevBookmarks) => [...prevBookmarks, newBookmark]);
+		} catch (error) {
+			console.error('Error:', error);
+		}
+	};
+
+	return (
+		<>
+			<AddBookmarkForm onSubmit={handleSubmit} />
+			{errorMessage && <div className='error-message'>{errorMessage}</div>}
+			<Suspense fallback={<Loader />}>
+				<BookmarkList bookmarks={bookmarks} />
+			</Suspense>
+		</>
+	);
 }
 
-export default App
+export default App;
