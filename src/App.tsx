@@ -66,6 +66,17 @@ function App() {
 
 	return (
 		<>
+			<h1>Bookmark List </h1>
+			<p>
+				Add bookmark photo for{' '}
+				<a target='_blank' href='https://www.flickr.com/'>
+					Flickr
+				</a>{' '}
+				or bookmark video for{' '}
+				<a target='_blank' href='https://vimeo.com/'>
+					Vimeo
+				</a>
+			</p>
 			<AddBookmarkForm onSubmit={handleSubmit} />
 			{errorMessage && <div className='error-message'>{errorMessage}</div>}
 			<Suspense fallback={<Loader />}>
