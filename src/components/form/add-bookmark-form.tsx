@@ -26,7 +26,14 @@ export const AddBookmarkForm = ({ onSubmit }: AddBookmarkFormProps) => {
 
 	return (
 		<form onSubmit={handleSubmit}>
-			<input type='text' name='url' required value={urlValue} onChange={handleUrlChange} />
+			<input
+				type='text'
+				name='url'
+				required
+				placeholder='image or video url'
+				value={urlValue}
+				onChange={handleUrlChange}
+			/>
 			<button type='submit'>Search</button>
 		</form>
 	);
